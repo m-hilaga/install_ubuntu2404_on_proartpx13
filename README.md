@@ -60,7 +60,7 @@ make modules_install install
 ```
 LANG=C xdg-user-dirs-update --force
 gsettings set org.gnome.desktop.input-sources xkb-options "['caps:ctrl_modifier']"
-gsettings set org.gnome.shell.extensions.dash-to-dock-dock-fixed false
+gsettings set org.gnome.shell.extensions.dash-to-dock dock-fixed false
 gsettings set org.gnome.settings-daemon.plugins.power ambient-enabled false
 gsettings set org.gnome.settings-daemon.plugins.power power-button-action suspend
 gsettings set org.gnome.desktop.interface show-battery-percentage true
@@ -87,6 +87,12 @@ sudo snap install slack
 ```
 
 `clang` は `g++-14` をインストールしないと `clang++` でコンパイルエラーが出る.
+
+```
+virtualenv venv312
+source ~/venv312/bin/activate
+pip install pip_search tabulate2
+```
 
 ## Nvidia関連
 
@@ -206,6 +212,6 @@ sudo apt updte
 sudo apt install forticlient
 ```
 
-`forticlient gui` で起動し, 下記マニュアルを通りにサーバを設定.
+`forticlient gui` で起動し, [REMOTE ACCDESS] → [Configure VPN] メニューから, 下記マニュアル通りにサーバを設定.
 
 https://drive.google.com/drive/folders/1CCuKMnNPEODo08fvKeqjEez6WzPtZcrt
