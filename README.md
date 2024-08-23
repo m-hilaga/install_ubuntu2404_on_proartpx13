@@ -6,48 +6,6 @@
 - インストーラで「プロプライエタリのパッケージをインストールする」は選択しない
 - 再起動時にGRUBの画面で e キーを押し、vmlinuz のオプションで quiet splash を削除し、 nomodeset を追加して起動
 
-## kernel 6.10.x インストール
-
-https://note.com/yamblue/n/n7d1d2f824077
-
-```
-sudo su -
-apt -y update
-apt -y install make gcc flex bison libelf-dev libssl-dev dwarves bc
-cd /usr/src
-wget https://cdn.kernel.org/pub/linux/kernel/v6.x/linux-6.10.tar.xz
-tar xfJ linux-6.10.tar.xz
-cd linux-6.10
-cp /boot/config-6.8.0-38-generic .config
-yes "" | make oldconfig
-cp .config .config.bak
-```
-
-`.config` の以下を修正
-
-```
-1183行目
-
-CONFIG_SYSTEM_TRUSTED_KEYS="debian/canonical-certs.pem"
-↓
-CONFIG_SYSTEM_TRUSTED_KEYS=""
-
-11841行目
-CONFIG_SYSTEM_REVOCATION_KEYS="debian/canonical-revoked-certs.pem"
-↓
-CONFIG_SYSTEM_REVOCATION_KEYS=""
-```
-
-コンパイルおよびカーネルをインストール
-
-```
-make -j12 bzImage modules
-make modules_install install
-```
-
-これでWiFiが利用可能に.  
-ただしBluetoothは繋がらない. Mediatek MT9725（WiFi+Bluetooth）にkernelがまだ対応しきれてない？
-
 ## Gnomeの設定
 
 - ホームディレクトリのファイル名を英語に https://qiita.com/peachft/items/fde3bebd356c17c1cef6
@@ -76,13 +34,27 @@ https://nisshingeppo.com/ai/ubuntu-nonsleep/
 HandleLidSwitch=ignore
 ```
 
-最後にリブート.
+## kernel 6.10.x インストール
+
+https://www.labohyt.net/blog/server/post-6981
+
+```
+sudo add-apt-repository ppa:cappelikan/ppa
+sudo apt update
+sudo apt install mainline
+sudo mainline-gtk
+```
+
+最新のカーネル6.10.xを選択し, インストールボタンを押す.  
+インストールできたらリブート.
+これでWiFiが利用可能に.  
+ただしBluetoothは繋がらない. Mediatek MT7925（WiFi+Bluetooth）にkernelがまだ対応しきれてない？  
 
 ## パッケージインストール
 
 ```
-sudo apt install terminator fonts-vlgothic libreoffice libreoffice-l10n-ja
-sudo apt install emacs kdiff3 git git-lfs virtualenv g++-14 clang
+sudo apt install terminator fonts-vlgothic libreoffice libreoffice-l10n-ja \
+  emacs kdiff3 git git-lfs virtualenv g++-14 clang
 sudo snap install slack
 ```
 
