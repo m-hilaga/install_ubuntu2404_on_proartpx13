@@ -45,7 +45,7 @@ apt -y install make gcc flex bison libelf-dev libssl-dev dwarves bc
 cd /usr/src
 wget https://cdn.kernel.org/pub/linux/kernel/v6.x/linux-6.10.6.tar.gz
 tar xzvf linux-6.10.6.tar.gz
-cd linux-6.10
+cd linux-6.10.6
 cp /boot/config-6.8.0-41-generic .config
 yes "" | make oldconfig
 cp .config .config.bak
