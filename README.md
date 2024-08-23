@@ -66,6 +66,27 @@ source ~/venv312/bin/activate
 pip install pip_search tabulate2
 ```
 
+## Git と GitHub
+
+`git-lfs` の有効化と git の設定.
+
+```
+git lfs install
+git config --global user.email "YOUR@EMAIL.ADDRESS"
+git config --global user.name "YOUR NAME"
+git config --global core.editor emacs
+git config --global merge.tool kdiff3
+```
+
+公開キーを作成し,
+
+```
+cd
+ssh-keygen -t rsa -C YOUR@EMAIL.ADDRESS
+```
+
+https://github.morphoinc.com/settings/ssh/new に `~/.ssh/id_rsa.pub` の中身を登録.
+
 ## Nvidia関連
 
 ドライバーをインストール.
@@ -108,26 +129,23 @@ sudo apt update
 sudo apt install libnvinfer* libnvonnxparsers*
 ```
 
-## Git と GitHub
+## ROCm
 
-`git-lfs` の有効化と git の設定.
+https://rocm.docs.amd.com/projects/install-on-linux/en/latest/install/amdgpu-install.html
 
-```
-git lfs install
-git config --global user.email "YOUR@EMAIL.ADDRESS"
-git config --global user.name "YOUR NAME"
-git config --global core.editor emacs
-git config --global merge.tool kdiff3
-```
-
-公開キーを作成し,
+`amdgpu-install`をインストール.
 
 ```
-cd
-ssh-keygen -t rsa -C YOUR@EMAIL.ADDRESS
+sudo apt update
+wget https://repo.radeon.com/amdgpu-install/6.2/ubuntu/noble/amdgpu-install_6.2.60200-1_all.deb
+sudo apt install ./amdgpu-install_6.2.60200-1_all.deb
 ```
 
-https://github.morphoinc.com/settings/ssh/new に `~/.ssh/id_rsa.pub` の中身を登録.
+rocm をインストール. amdgpu-dkms をインストールすると起動しなくなるので dkms はインストールしない.
+
+```
+amdgpu-install --usecase=rocmdev --no-dkms
+```
 
 ## サスペンドからの復帰
 
