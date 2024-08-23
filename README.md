@@ -72,7 +72,13 @@ make -j12 bzImage modules
 make modules_install install
 ```
 
-## Kernel 6.10.x インストール (mainlineより)
+インストールできたらリブート.
+これでWiFiが利用可能に.  
+ただしBluetoothは繋がらない. Mediatek MT7925（WiFi+Bluetooth）にkernelがまだ対応しきれてない？  
+
+## Kernel 6.10.x インストール (mainlinekから)
+
+`nvidia-driver-550` がインストールできなくなるのでNG.
 
 https://www.labohyt.net/blog/server/post-6981
 
@@ -176,13 +182,25 @@ https://rocm.docs.amd.com/projects/install-on-linux/en/latest/install/amdgpu-ins
 ```
 sudo apt update
 wget https://repo.radeon.com/amdgpu-install/6.2/ubuntu/noble/amdgpu-install_6.2.60200-1_all.deb
-sudo apt install ./amdgpu-install_6.2.60200-1_all.deb
+sudo dpkg -i ./amdgpu-install_6.2.60200-1_all.deb
 ```
 
 rocm をインストール. amdgpu-dkms をインストールすると起動しなくなるので dkms はインストールしない.
 
 ```
 amdgpu-install --usecase=rocmdev --no-dkms
+```
+
+render, video グループにユーザを追加.
+
+```
+sudo usermod -a -G render,video $LOGNAME
+```
+
+`/usr/bin/ld` でリンクできるように `/usr/lib/libOpenCL.so` にリンクを生成
+
+```
+sudo ln -s /opt/rocm/lib/libOpenCL.so /usr/lib/libOpenCL.so
 ```
 
 ## サスペンドからの復帰
