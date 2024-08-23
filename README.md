@@ -34,7 +34,45 @@ https://nisshingeppo.com/ai/ubuntu-nonsleep/
 HandleLidSwitch=ignore
 ```
 
-## kernel 6.10.x インストール
+## Kernel 6.10.x インストール
+
+https://note.com/yamblue/n/n7d1d2f824077
+
+```
+sudo su -
+apt -y update
+apt -y install make gcc flex bison libelf-dev libssl-dev dwarves bc
+cd /usr/src
+wget https://cdn.kernel.org/pub/linux/kernel/v6.x/linux-6.10.6.tar.gz
+tar xzvf linux-6.10.6.tar.gz
+cd linux-6.10
+cp /boot/config-6.8.0-41-generic .config
+yes "" | make oldconfig
+cp .config .config.bak
+```
+
+`.config` の以下を編集.
+
+```
+11833行目
+CONFIG_SYSTEM_TRUSTED_KEYS="debian/canonical-certs.pem"
+↓
+CONFIG_SYSTEM_TRUSTED_KEYS=""
+
+11841行目
+CONFIG_SYSTEM_REVOCATION_KEYS="debian/canonical-revoked-certs.pem"
+↓
+CONFIG_SYSTEM_REVOCATION_KEYS=""
+```
+
+コンパイルとインストール.
+
+```
+make -j12 bzImage modules
+make modules_install install
+```
+
+## Kernel 6.10.x インストール (mainlineより)
 
 https://www.labohyt.net/blog/server/post-6981
 
