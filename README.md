@@ -97,18 +97,15 @@ sudo mainline-gtk
 ## パッケージインストール
 
 ```
-sudo apt install terminator fonts-vlgothic libreoffice libreoffice-l10n-ja \
-  emacs kdiff3 git git-lfs virtualenv g++-14 clang
+sudo apt install terminator trash-cli fonts-vlgothic libreoffice libreoffice-l10n-ja zsh \
+  emacs kdiff3 git git-lfs virtualenv g++-14 clang hexedit
+virtualenv venv312
+source ~/venv312/bin/activate
+pip install pip_search tabulate2
 sudo snap install slack
 ```
 
 `clang` は `g++-14` をインストールしないと `clang++` でコンパイルエラーが出る.
-
-```
-virtualenv venv312
-source ~/venv312/bin/activate
-pip install pip_search tabulate2
-```
 
 ## Git と GitHub
 
