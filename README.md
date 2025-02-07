@@ -65,6 +65,13 @@ CONFIG_SYSTEM_REVOCATION_KEYS="debian/canonical-revoked-certs.pem"
 CONFIG_SYSTEM_REVOCATION_KEYS=""
 ```
 
+bluetoothを有効にするため `/usr/src/linux-6.10.6/drivers/bluetooth/btusb.c` の692行目に以下を追加.
+
+```
+	{ USB_DEVICE(0x0489, 0xe11e), .driver_info = BTUSB_MEDIATEK |
+						     BTUSB_WIDEBAND_SPEECH },
+```
+
 コンパイルとインストール.
 
 ```
