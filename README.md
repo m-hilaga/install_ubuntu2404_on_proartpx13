@@ -98,7 +98,7 @@ sudo mainline-gtk
 
 ```
 sudo apt install terminator trash-cli fonts-vlgothic libreoffice libreoffice-l10n-ja zsh \
-  emacs kdiff3 git git-lfs virtualenv g++-14 clang hexedit
+  emacs kdiff3 git git-lfs virtualenv g++-14 clang hexedit cmake swig
 virtualenv venv312
 source ~/venv312/bin/activate
 pip install pip_search tabulate2
