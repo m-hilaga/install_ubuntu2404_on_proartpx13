@@ -65,7 +65,8 @@ CONFIG_SYSTEM_REVOCATION_KEYS="debian/canonical-revoked-certs.pem"
 CONFIG_SYSTEM_REVOCATION_KEYS=""
 ```
 
-bluetoothを有効にするため `/usr/src/linux-6.10.6/drivers/bluetooth/btusb.c` の692行目に以下を追加.
+bluetoothを有効にするため`/usr/src/linux-6.10.6/drivers/bluetooth/btusb.c` の
+`/* Additional MediaTek MT7925 Bluetooth devices */` の直後の692行目に以下を追加.
 
 ```
 	{ USB_DEVICE(0x0489, 0xe11e), .driver_info = BTUSB_MEDIATEK |
@@ -80,26 +81,7 @@ make modules_install install
 ```
 
 インストールできたらリブート.
-これでWiFiが利用可能に.  
-ただしBluetoothは繋がらない. Mediatek MT7925（WiFi+Bluetooth）にkernelがまだ対応しきれてない？  
-
-## Kernel 6.10.x インストール (mainlinekから)
-
-`nvidia-driver-550` がインストールできなくなるのでNG.
-
-https://www.labohyt.net/blog/server/post-6981
-
-```
-sudo add-apt-repository ppa:cappelikan/ppa
-sudo apt update
-sudo apt install mainline
-sudo mainline-gtk
-```
-
-最新のカーネル6.10.xを選択し, インストールボタンを押す.  
-インストールできたらリブート.
-これでWiFiが利用可能に.  
-ただしBluetoothは繋がらない. Mediatek MT7925（WiFi+Bluetooth）にkernelがまだ対応しきれてない？  
+これでWiFiとBluetoothが利用可能に.  
 
 ## パッケージインストール
 
