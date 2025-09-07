@@ -180,9 +180,19 @@ sudo apt install forticlient
 
 https://drive.google.com/drive/folders/1CCuKMnNPEODo08fvKeqjEez6WzPtZcrt
 
-## サスペンドから復帰後のタッチパネル
+## タッチパネル
 
-以下の手順でサスペンドからの復帰後にタッチパネルを使えるようにする.
+### スクリーンキーボードの無効化
+
+```
+$ gsettings set org.gnome.desktop.a11y.applications screen-keyboard-enabled false
+$ sudo apt install chrome-gnome-shell
+```
+
+Google Chrome から `https://extensions.gnome.org/extension/3222/block-caribou-36/`
+にアクセスし, 拡張機能をONにする.
+
+### サスペンドから復帰後にタッチパネルを使用可
 
 ファイル `/etc/modprobe.d/nvidia.conf` を以下内容で作成.
 
@@ -207,4 +217,13 @@ fi
 
 ```
 $ sudo chmod +x /lib/systemd/system-sleep/touch-reset.sh
+```
+
+nvidiaモジュールに正しくパラメータが設定されているかは再起動後に以下で確認できる.
+
+```
+$ grep PreserveVideoMemory /proc/driver/nvidia/params
+PreserveVideoMemoryAllocations: 1
+$ grep TemporaryFilePath /proc/driver/nvidia/params  
+TemporaryFilePath: "/tmp"
 ```
