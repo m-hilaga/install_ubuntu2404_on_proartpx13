@@ -34,6 +34,28 @@ https://nisshingeppo.com/ai/ubuntu-nonsleep/
 HandleLidSwitch=ignore
 ```
 
+## GRUBのフォント
+
+デフォルトのままだとGRUBの解像度2880x1800に対して文字が小さ過ぎ.
+
+GRUB用フォントを作成.
+
+```
+$ sudo grub-mkfont --output=/boot/grub/fonts/DejaVuSansMono.pf2 --size=36 /usr/share/fonts/truetype/dejavu/DejaVuSansMono.ttf
+```
+
+ファイル `/etc/default/grub` に以下行を追加.
+
+```
+GRUB_FONT="/boot/grub/fonts/UbuntuSansMono.pf2"
+```
+
+変更を反映.
+
+```
+$ sudo update-grub
+```
+
 ## パッケージインストール
 
 ```
