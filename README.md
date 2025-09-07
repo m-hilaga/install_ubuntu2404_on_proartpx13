@@ -182,7 +182,7 @@ https://drive.google.com/drive/folders/1CCuKMnNPEODo08fvKeqjEez6WzPtZcrt
 
 ## サスペンドから復帰後のタッチパネル
 
-以下の手順でサスペンドからの復帰後にタッチパネを使えるようにする.
+以下の手順でサスペンドからの復帰後にタッチパネルを使えるようにする.
 
 ファイル `/etc/modprobe.d/nvidia.conf` を以下内容で作成.
 
