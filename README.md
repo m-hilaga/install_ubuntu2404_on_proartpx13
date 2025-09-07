@@ -34,61 +34,13 @@ https://nisshingeppo.com/ai/ubuntu-nonsleep/
 HandleLidSwitch=ignore
 ```
 
-## Kernel 6.10.x インストール
-
-https://note.com/yamblue/n/n7d1d2f824077
-
-```
-sudo su -
-apt -y update
-apt -y install make gcc flex bison libelf-dev libssl-dev dwarves bc
-cd /usr/src
-wget https://cdn.kernel.org/pub/linux/kernel/v6.x/linux-6.10.6.tar.gz
-tar xzvf linux-6.10.6.tar.gz
-cd linux-6.10.6
-cp /boot/config-6.8.0-41-generic .config
-yes "" | make oldconfig
-cp .config .config.bak
-```
-
-`.config` の以下を編集.
-
-```
-11833行目
-CONFIG_SYSTEM_TRUSTED_KEYS="debian/canonical-certs.pem"
-↓
-CONFIG_SYSTEM_TRUSTED_KEYS=""
-
-11841行目
-CONFIG_SYSTEM_REVOCATION_KEYS="debian/canonical-revoked-certs.pem"
-↓
-CONFIG_SYSTEM_REVOCATION_KEYS=""
-```
-
-bluetoothを有効にするため`/usr/src/linux-6.10.6/drivers/bluetooth/btusb.c` の
-`/* Additional MediaTek MT7925 Bluetooth devices */` の直後の692行目に以下を追加.
-
-```
-	{ USB_DEVICE(0x0489, 0xe11e), .driver_info = BTUSB_MEDIATEK |
-						     BTUSB_WIDEBAND_SPEECH },
-```
-
-コンパイルとインストール.
-
-```
-make -j12 bzImage modules
-make modules_install install
-```
-
-インストールできたらリブート.
-これでWiFiとBluetoothが利用可能に.  
-
 ## パッケージインストール
 
 ```
-sudo apt install terminator trash-cli fonts-vlgothic libreoffice libreoffice-l10n-ja zsh \
-  emacs kdiff3 git git-lfs virtualenv g++-14 clang hexedit cmake swig
-virtualenv venv312
+sudo apt install terminator trash-cli libreoffice libreoffice-l10n-ja zsh \
+  emacs kdiff3 git git-lfs python3-venv clang g++-14 libgtest-dev hexedit cmake swig \
+  ocl-icd-opencl-dev
+python3 -m venv venv312
 source ~/venv312/bin/activate
 pip install pip_search tabulate2
 sudo snap install slack
@@ -119,10 +71,14 @@ https://github.morphoinc.com/settings/ssh/new に `~/.ssh/id_rsa.pub` の中身�
 
 ## Nvidia関連
 
-ドライバーをインストール.
+ドライバーをインストール. 2025/9/7現在の安定バージョンは575-server.
+
+https://www.linux.digibeatrix.com/archives/713
 
 ```
-sudo apt install nvidia-driver-550
+sudo add-apt-repository ppa:graphics-drivers/ppa
+sudo apt-get update
+sudo apt install nvidia-driver-575-server
 ```
 
 `cuda-toolkit-12-4` で必要となる `libtinfo5` (Ubuntu 24.04には無い) をインストール.
@@ -137,26 +93,31 @@ sudo dpkg -i libtinfo5_6.3-2ubuntu0.1_amd64.deb
 ```
 wget https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2204/x86_64/cuda-ubuntu2204.pin
 sudo mv cuda-ubuntu2204.pin /etc/apt/preferences.d/cuda-repository-pin-600
-wget https://developer.download.nvidia.com/compute/cuda/12.4.0/local_installers/cuda-repo-ubuntu2204-12-4-local_12.4.0-550.54.14-1_amd64.deb
-sudo dpkg -i cuda-repo-ubuntu2204-12-4-local_12.4.0-550.54.14-1_amd64.deb
+wget https://developer.download.nvidia.com/compute/cuda/12.4.1/local_installers/cuda-repo-ubuntu2204-12-4-local_12.4.1-550.54.15-1_amd64.deb
+sudo dpkg -i cuda-repo-ubuntu2204-12-4-local_12.4.1-550.54.15-1_amd64.deb
 sudo cp /var/cuda-repo-ubuntu2204-12-4-local/cuda-*-keyring.gpg /usr/share/keyrings/
 sudo apt-get update
 sudo apt-get -y install cuda-toolkit-12-4
 ```
 
-TensorRT 10.3 (`tensorrt`パッケージ) をインストール.
+TensorRT 10.8 (`tensorrt`パッケージ)をインストール.
 
 https://developer.nvidia.com/tensorrt/download/  
 https://docs.nvidia.com/deeplearning/tensorrt/install-guide/index.html
 
-ただし `python3-libnvinfer-dev` は除く. なぜなら `python3 (< 3.11)` を満たせないので.
+```
+wget https://developer.nvidia.com/downloads/compute/machine-learning/tensorrt/10.8.0/local_repo/nv-tensorrt-local-repo-ubuntu2404-10.8.0-cuda-12.8_1.0-1_amd64.deb
+sudo dpkg -i nv-tensorrt-local-repo-ubuntu2404-10.8.0-cuda-12.8_1.0-1_amd64.deb
+sudo cp /var/nv-tensorrt-local-repo-ubuntu2404-10.8.0-cuda-12.8/nv-tensorrt-local-90658366-keyring.gpg /usr/share/keyrings
+sudo apt install tensorrt
+```
+
+NVIDIAドライバーのsuspend/resumeを有効にする.
+
+https://note.com/sylphid_modder/n/nfa5612a989a8
 
 ```
-wget https://developer.nvidia.com/downloads/compute/machine-learning/tensorrt/10.3.0/local_repo/nv-tensorrt-local-repo-ubuntu2204-10.3.0-cuda-12.5_1.0-1_amd64.deb
-sudo dpkg -i nv-tensorrt-local-repo-ubuntu2204-10.3.0-cuda-12.5_1.0-1_amd64.deb
-sudo cp /var/nv-tensorrt-local-repo-ubuntu2204-10.3.0-cuda-12.5/*-keyring.gpg /usr/share/keyrings/
-sudo apt update
-sudo apt install libnvinfer* libnvonnxparsers*
+systemctl enable nvidia-hibernate.service nvidia-resume.service nvidia-suspend.service
 ```
 
 ## ROCm
@@ -166,9 +127,9 @@ https://rocm.docs.amd.com/projects/install-on-linux/en/latest/install/amdgpu-ins
 `amdgpu-install`をインストール.
 
 ```
+wget https://repo.radeon.com/amdgpu-install/6.3.3/ubuntu/noble/amdgpu-install_6.3.60303-1_all.deb
+sudo apt install ./amdgpu-install_6.3.60303-1_all.deb
 sudo apt update
-wget https://repo.radeon.com/amdgpu-install/6.2/ubuntu/noble/amdgpu-install_6.2.60200-1_all.deb
-sudo dpkg -i ./amdgpu-install_6.2.60200-1_all.deb
 ```
 
 rocm をインストール. amdgpu-dkms をインストールすると起動しなくなるので dkms はインストールしない.
@@ -183,35 +144,6 @@ render, video グループにユーザを追加.
 sudo usermod -a -G render,video $LOGNAME
 ```
 
-`/usr/bin/ld` でリンクできるように `/usr/lib/libOpenCL.so` にリンクを生成
-
-```
-sudo ln -s /opt/rocm/lib/libOpenCL.so /usr/lib/libOpenCL.so
-```
-
-## サスペンドからの復帰
-
-https://blog.hanhans.net/2021/04/11/reload-bluetooth-after-suspend/  
-
-タッチスクリーン復帰のために以下を `/lib/systemd/system-sleep/multitouch` に書き込み.
-
-```
-#!/bin/sh
-
-case $1 in
-  post)
-    modprobe -r hid_multitouch
-    modprobe hid_multitouch
-    ;;
-esac
-```
-
-上記ファイルに実行権限を付与.
-
-```
-sudo chmod +x /lib/systemd/system-sleep/multitouch
-```
-
 ## VPN
 
 https://www.fortinet.com/support/product-downloads/linux  
@@ -222,11 +154,11 @@ https://community.fortinet.com/t5/Support-Forum/Ubuntu-24-04-Forticlient-VPN-ins
 ```
 wget http://ftp.jp.debian.org/debian/pool/main/liba/libayatana-indicator/libayatana-indicator7_0.8.4-1+deb11u2_amd64.deb
 wget http://ftp.jp.debian.org/debian/pool/main/liba/libayatana-appindicator/libayatana-appindicator1_0.5.5-2+deb11u2_amd64.deb
-wget http://security.ubuntu.com/ubuntu/pool/universe/libd/libdbusmenu/libdbusmenu-gtk4_18.10.20180917~bzr492+repack1-3ubuntu1_amd64.deb
+wget http://ftp.de.debian.org/debian/pool/main/libd/libdbusmenu/libdbusmenu-gtk4_18.10.20180917~bzr492+repack1-3_amd64.deb
 sudo dpkg -i \
   libayatana-indicator7_0.8.4-1+deb11u2_amd64.deb \
   libayatana-appindicator1_0.5.5-2+deb11u2_amd64.deb \
-  libdbusmenu-gtk4_18.10.20180917~bzr492+repack1-3ubuntu1_amd64.deb
+  libdbusmenu-gtk4_18.10.20180917~bzr492+repack1-3_amd64.deb
 ```
 
 gpg キーを設定し, fortinet の リポジトリを追加.
@@ -240,10 +172,39 @@ echo "deb [arch=amd64 signed-by=/usr/share/keyrings/repo.fortinet.com.gpg] https
 `forticlient` のインストール.
 
 ```
-sudo apt updte
+sudo apt update
 sudo apt install forticlient
 ```
 
 `forticlient gui` で起動し, [REMOTE ACCDESS] → [Configure VPN] メニューから, 下記マニュアル通りにサーバを設定.
 
 https://drive.google.com/drive/folders/1CCuKMnNPEODo08fvKeqjEez6WzPtZcrt
+
+## サスペンドから復帰後のタッチパネル
+
+以下の手順でサスペンドからの復帰後にタッチパネを使えるようにする.
+
+ファイル `/etc/modprobe.d/nvidia.conf` を以下内容で作成.
+
+```
+options nvidia NVreg_PreserveVideoMemoryAllocations=1 NVreg_TemporaryFilePath=/tmp
+```
+
+ファイル `/lib/systemd/system-sleep/touch-reset.sh` を以下内容で作成.
+
+```
+#!/bin/bash
+if [ "$1" = "post" ]; then
+    for dev in /sys/bus/i2c/drivers/i2c_hid_acpi/*:*; do
+        devname=$(basename $dev)
+        echo -n "$devname" > /sys/bus/i2c/drivers/i2c_hid_acpi/unbind
+        echo -n "$devname" > /sys/bus/i2c/drivers/i2c_hid_acpi/bind
+    done
+fi
+```
+
+`/lib/systemd/system-sleep/touch-reset.sh` に実行権限を付与.
+
+```
+$ sudo chmod +x /lib/systemd/system-sleep/touch-reset.sh
+```
