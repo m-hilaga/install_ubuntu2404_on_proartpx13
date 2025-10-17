@@ -93,7 +93,7 @@ https://github.morphoinc.com/settings/ssh/new に `~/.ssh/id_rsa.pub` の中身�
 
 ## Nvidia関連
 
-ドライバーをインストール. 2025/9/7現在の安定バージョンは575-server.
+ドライバーをインストール. 2025/10/17現在の安定バージョンは570-server.
 
 https://www.linux.digibeatrix.com/archives/713
 
